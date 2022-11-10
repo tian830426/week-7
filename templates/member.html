@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+     *{
+        box-sizing: border-box;
+        padding: 0;
+        margin: 0;
+    }
+    nav{
+        width: 100vw;
+        height: 10vh;
+        background-color: rgb(12, 50, 66);
+        color: aliceblue;
+        
+    }
+    nav p{
+        font-size: 2.5rem;
+        text-align: center;
+        line-height: 10vh;
+    }
+    main p{ 
+    font-size: 2rem;
+     text-align: center; 
+      margin-top: 10vh;
+    }
+    main h3{
+     font-size: 2rem;
+     text-align: center; 
+      margin-top: 5vh;
+      margin-bottom: 5vh;
+    }
+    main form{
+      font-size: 1.5rem;
+      width: 23%;
+      margin: 0 auto;
+
+      
+    }
+    main form>input{
+      width: 250px;
+      height: 40px;
+      margin: 0 15px
+  
+    }
+
+    main button{
+      width: 100px;
+      height: 40px;
+      line-height: 40px;
+      font-size: 1.5rem;
+    }   
+</style>
+<body>
+    <nav>
+        <p>歡迎光臨，這是會員頁</p>
+    </nav>
+    <main>
+    <p id="changeName">
+       {{name}}，歡迎成功登入系統
+    </p>
+    <p><a href="http://127.0.0.1:4000/signout">登出系統</a></p>
+    <br>
+    <br>
+    <!-- check() -->
+    <div style="text-align: center; margin-top: 20px; font-size: 1.5rem;">
+    <label>查詢會員姓名</label>
+    <input type="text" id="userName" name="username">
+    <button id="check" onclick="check()">查詢</button></div>
+    <div id="searchName" style="text-align: center; margin-top: 20px; font-size: 1.5rem;"></div>
+
+    <!--update() -->
+    <div style="text-align: center; margin-top: 20px; font-size: 1.5rem;">
+    <label>更新我的姓名</label>
+    <input type="text" id="updateName" name="updatename">
+    <button id="update" onclick="update()">更新</button></div>
+    <div id="updateResult" style="text-align: center; margin-top: 20px; font-size: 1.5rem;"></div>
+    </main>
+
+<script>
+// 設定check()監聽事件 - fetch到後端提供的api json()格式 - 回應 json()格式 - 取得填入的值 -將值渲染在前端畫面
+  function check(){
+  const user = document.getElementById("userName").value;
+  fetch("http://127.0.0.1:4000/api/member?username="+user)
+    .then(function(response){
+      return response.json();    
+  })
+    .then(function(value){
+    console.log(value);
+    let search = document.getElementById("searchName");
+    search.innerHTML = value.data.name+"("+value.data.username+")";
+    console.log(value.data.name);
+  })
+    .catch(function(error){
+    document.getElementById("searchName").innerHTML="查無此人";
+});
+}
+
+// 設定update()監聽事件 - fetch到後端提供的api json()格式 - 使用patch方法 - 回應 json()格式 - 取得填入的值 -將值渲染在前端畫面
+function update(){
+  let updatename = document.getElementById("updateName");
+  // 設定json格式 (類似python-字典)
+  let entry = {"name": updatename.value}
+  console.log(entry);
+  fetch('/api/member',
+  {
+    method:'PATCH',
+    credentials:'include',
+    body:JSON.stringify(entry),
+    cache:'no-cache',
+    headers:{'content-type':'application/json'},
+  })
+    .then(function(response){
+      return response.json();
+    })
+      .then(function(jsonData){ 
+      let result = document.getElementById("updateResult");
+      //回傳一個排序結果的陣列，參數的key透過陣列回傳 
+      let status = Object.keys(jsonData);
+      result.innerHTML = "";
+      if(status=="ok"){
+      result.innerHTML = "更新成功";
+      let changename = document.querySelector("#changeName");
+      changename.innerHTML = updatename.value +'，歡迎成功登入系統'
+      }else{
+      result.innerHTML = "更新失敗";
+      }
+    })
+
+    
+
+  //  ,response.json().then(function(data){
+  //   let result=document.getElementById("updateResult");
+  //   //回傳一個排序結果的陣列，參數的key透過陣列回傳
+  //   let status=Object.keys(responseData);
+  //   result.innerHTML="";
+  //   if(status=="ok"){
+  //   result.innerHTML="更新成功";
+  //   }else{
+  //   result.innerHTML="更新失敗";
+  //   }
+  // })
+ }
+
+</script>
+</body>
+</html>
