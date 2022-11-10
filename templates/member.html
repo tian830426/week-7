@@ -120,10 +120,9 @@ function update(){
     })
       .then(function(jsonData){ 
       let result = document.getElementById("updateResult");
-      //回傳一個排序結果的陣列，參數的key透過陣列回傳 
-      let status = Object.keys(jsonData);
+      console.log(jsonData);
       result.innerHTML = "";
-      if(status=="ok"){
+      if(jsonData['ok'] == true ){
       result.innerHTML = "更新成功";
       let changename = document.querySelector("#changeName");
       changename.innerHTML = updatename.value +'，歡迎成功登入系統'

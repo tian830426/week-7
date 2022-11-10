@@ -107,15 +107,15 @@ def apply():
     else:
         entry=json.loads(request.data)
         name = session['name']
-        print (name)
+        user = session['username']
         new_name = entry["name"]
         mycursor = new.cursor()
         
         if new_name == "" or session['enter'] != "open":                  
             return jsonify({"error":True})
         else:
-            sql = "UPDATE member set name = %s WHERE name = %s"
-            mycursor.execute(sql, (new_name, name))
+            sql = "UPDATE member set name = %s WHERE username = %s "
+            mycursor.execute(sql, (new_name, user))
             myresult = mycursor.fetchone()
             new.commit() 
             return jsonify({"ok":True})
